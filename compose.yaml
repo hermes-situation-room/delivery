@@ -1,0 +1,46 @@
+services:
+  frontend-prod:
+    container_name: situationroom-frontend-prod
+    image: dariokrieg/situationroom-frontend:latest
+    restart: always
+    ports:
+      - "13400:80"
+    networks:
+      - app-network-prod
+
+  api-prod:
+    container_name: situationroom-backend-prod
+    image: dariokrieg/situationroom-backend:latest
+    restart: always
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__SituationRoomDb: "Server=mssql-prod;User=sa;Password=INSERT_SAFE_PW_HERE;TrustServerCertificate=true;Initial Catalog=HERMESSituationRoom;"
+    ports:
+      - "13500:8080"
+    depends_on:
+      - mssql-prod
+    networks:
+      - app-network-prod
+
+  mssql-prod:
+    container_name: sql-server-situation-prod
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: always
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "INSERT_SAFE_PW_HERE"
+      MSSQL_PID: "Developer"
+    ports:
+      - "13600:1433"
+    volumes:
+      - sql-server-data-prod:/var/opt/mssql
+    networks:
+      - app-network-prod
+
+networks:
+  app-network-prod:
+    driver: bridge
+
+volumes:
+  sql-server-data-prod:
+    driver: local
