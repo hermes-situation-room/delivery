@@ -2,6 +2,7 @@ services:
   frontend-prod:
     container_name: situationroom-frontend-prod
     image: dariokrieg/situationroom-frontend:latest
+    pull_policy: always
     restart: always
     ports:
       - "13400:80"
@@ -11,6 +12,7 @@ services:
   api-prod:
     container_name: situationroom-backend-prod
     image: dariokrieg/situationroom-backend:latest
+    pull_policy: always
     restart: always
     environment:
       ASPNETCORE_ENVIRONMENT: Production
@@ -36,6 +38,31 @@ services:
       - sql-server-data-prod:/var/opt/mssql
     networks:
       - app-network-prod
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx-proxy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+    depends_on:
+      - frontend-prod
+      - api-prod
+    networks:
+      - app-network-prod
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    entrypoint: /bin/sh -c "trap exit TERM; while :; do sleep 6h & wait $${!}; certbot renew; done"
+    volumes:
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
 
 networks:
   app-network-prod:
