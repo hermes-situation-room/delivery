@@ -4,7 +4,7 @@
 # This configuration defines the **release (production)** environment.
 # All services are isolated on a private internal network.
 # Only the nginx reverse proxy exposes ports 80/443 to the public.
-# Secrets are injected via Docker secrets (never hard-coded).
+# Secrets are injected via environment variables (never hard-coded).
 # ======================================================
 
 services:
@@ -109,15 +109,6 @@ services:
       done"
     networks:
       - hermes-release-network
-
-# -------------------------------
-# 🔒 DOCKER SECRETS (secure storage)
-# -------------------------------
-secrets:
-  db_conn_string:
-    file: ./secrets/db_conn_string.txt               # Example: "Server=mssql-release;User=sa;Password=super-secure-pw;..."
-  mssql_sa_password:
-    file: ./secrets/mssql_sa_password.txt            # Strong, random SA password stored securely
 
 # -------------------------------
 # 🌐 NETWORK DEFINITION

@@ -1,8 +1,6 @@
-# ============================================================
 # 🧭 HERMES SITUATION ROOM — LOCAL RELEASE STAGE SETUP GUIDE
-# ============================================================
 
-Welcome to your **local release-stage environment**! This guide walks you through **setting up and running the full Hermes system locally with HTTPS**, using either **self-signed certificates** or **mkcert**.
+Welcome to your **local release-stage environment**! This guide walks you through **setting up and running the full Hermes system locally with HTTPS**, using **self-signed certificates**.
 
 ---
 
@@ -67,7 +65,7 @@ Access the site at:
 
 Let’s Encrypt cannot issue certificates for `.release`. Use **self-signed** or **mkcert**.
 
-### ✅ OPTION 1 — Self-Signed Certificate
+### ✅ Self-Signed Certificate
 
 ```bash
 mkdir -p certbot/conf/live/hermes-situation-room.release
@@ -160,4 +158,3 @@ docker system prune -af
 ---
 
 🪶 *Hermes Situation Room — Release Stage Deployment (Local Testing Edition)*
-
