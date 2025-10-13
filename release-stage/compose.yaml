@@ -1,0 +1,134 @@
+# ======================================================
+# 🚀 HERMES SITUATION ROOM — RELEASE STAGE DEPLOYMENT
+# ======================================================
+# This configuration defines the **release (production)** environment.
+# All services are isolated on a private internal network.
+# Only the nginx reverse proxy exposes ports 80/443 to the public.
+# Secrets are injected via Docker secrets (never hard-coded).
+# ======================================================
+
+services:
+
+  # -------------------------------
+  # 🌐 NGINX REVERSE PROXY (PUBLIC ENTRY POINT)
+  # -------------------------------
+  nginx-release:
+    image: nginx:stable
+    container_name: nginx-release-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro         # Nginx configs (TLS, proxy, rate limits, etc.)
+      - ./certbot/www:/var/www/certbot:rw           # Certbot challenge directory
+      - ./certbot/conf:/etc/letsencrypt:ro          # SSL certificates
+    networks:
+      - hermes-release-network
+    depends_on:
+      - frontend-release
+      - api-release
+
+  # -------------------------------
+  # 🖥️ FRONTEND (INTERNAL ONLY)
+  # -------------------------------
+  frontend-release:
+    image: dariokrieg/situationroom-frontend:latest
+    container_name: hermes-frontend-release
+    pull_policy: always
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    expose:
+      - "80"                                        # Internal only — accessed by nginx
+    networks:
+      - hermes-release-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  # -------------------------------
+  # ⚙️ BACKEND API (INTERNAL ONLY)
+  # -------------------------------
+  api-release:
+    image: dariokrieg/situationroom-backend:latest
+    container_name: hermes-backend-release
+    pull_policy: always
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__SituationRoomDb=${DB_CONN_STRING}
+    expose:
+      - "8080"                                       # Internal only — proxied by nginx
+    networks:
+      - hermes-release-network
+    depends_on:
+      - mssql-release
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+
+  # -------------------------------
+  # 🧱 MICROSOFT SQL SERVER (INTERNAL ONLY)
+  # -------------------------------
+  mssql-release:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: hermes-sql-release
+    restart: unless-stopped
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_PID=Developer
+      - SA_PASSWORD=${MSSQL_SA_PASSWORD}
+    expose:
+      - "1433"                                       # Internal only — never mapped to host
+    volumes:
+      - sql-server-data-release:/var/opt/mssql:rw
+    networks:
+      - hermes-release-network
+
+  # -------------------------------
+  # 🔒 CERTBOT
+  # -------------------------------
+  certbot-release:
+    image: certbot/certbot:latest
+    container_name: hermes-certbot-release
+    restart: unless-stopped
+    volumes:
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock
+    entrypoint: >
+      sh -c "trap exit TERM; while :; do
+        certbot renew --webroot -w /var/www/certbot --quiet \
+          --deploy-hook 'docker exec nginx-release-proxy nginx -s reload';
+        sleep 12h;
+      done"
+    networks:
+      - hermes-release-network
+
+# -------------------------------
+# 🔒 DOCKER SECRETS (secure storage)
+# -------------------------------
+secrets:
+  db_conn_string:
+    file: ./secrets/db_conn_string.txt               # Example: "Server=mssql-release;User=sa;Password=super-secure-pw;..."
+  mssql_sa_password:
+    file: ./secrets/mssql_sa_password.txt            # Strong, random SA password stored securely
+
+# -------------------------------
+# 🌐 NETWORK DEFINITION
+# -------------------------------
+networks:
+  hermes-release-network:
+    driver: bridge                                  # Internal-only network (isolated from host)
+
+# -------------------------------
+# 💾 PERSISTENT VOLUMES
+# -------------------------------
+volumes:
+  sql-server-data-release:
+    driver: local                                   # Persistent DB data (mounted securely)
