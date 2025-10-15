@@ -65,7 +65,7 @@ Access the site at:
 
 Let’s Encrypt cannot issue certificates for `.release`. Use **self-signed**.
 
-### ✅ Self-Signed Certificate
+### ✅ Self-Signed Certificate — Local `.release` setup
 
 ```bash
 mkdir -p certbot/conf/live/hermes-situation-room.release
@@ -84,7 +84,10 @@ openssl req -x509 -nodes -newkey rsa:2048 \
 
 ### ✅ (Optional) Real Production Certificate for `situation-room.org`
 
-If you’re deploying the **real production instance**, not the local `.release` setup, you can obtain a trusted Let’s Encrypt certificate using:
+If you’re deploying the **real production instance**, not the local `.release` setup, you can obtain a trusted Let’s Encrypt certificate.
+
+1. Make sure `situation-room.org` resolves publicly and ports 80/443 are open.
+2. Run Certbot using Docker:
 
 ```bash
 docker run --rm -it \
@@ -99,7 +102,19 @@ docker run --rm -it \
   --non-interactive
 ```
 
-> ⚠️ **Note:** This only works if your domain `situation-room.org` publicly resolves to the server’s IP and ports 80/443 are open.  
+3. After successful issuance:
+   - Uncomment the HTTPS block in Nginx
+   - Comment out the temporary HTTP block
+   - Restart the whole system:
+
+```bash
+docker compose down
+```
+
+```bash
+docker compose --env-file .env up -d
+```
+
 > For **local testing**, use the **self-signed certificate** method above instead.
 
 ---
