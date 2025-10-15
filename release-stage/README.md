@@ -61,9 +61,9 @@ Access the site at:
 
 ---
 
-## 🔐 STEP 2 — Generate Local HTTPS Certificates
+## 🔐 STEP 2 — Generate HTTPS Certificates
 
-Let’s Encrypt cannot issue certificates for `.release`. Use **self-signed** or **mkcert**.
+Let’s Encrypt cannot issue certificates for `.release`. Use **self-signed**.
 
 ### ✅ Self-Signed Certificate
 
@@ -81,6 +81,35 @@ openssl req -x509 -nodes -newkey rsa:2048 \
 *macOS:* Open `fullchain.pem` → add to "System" keychain → set “Always Trust”.
 
 *Windows:* Double-click `.pem` → Install Certificate → Local Machine → Trusted Root Certification Authorities.
+
+### ✅ (Optional) Real Production Certificate for `situation-room.org`
+
+If you’re deploying the **real production instance**, not the local `.release` setup, you can obtain a trusted Let’s Encrypt certificate using:
+
+```bash
+docker run --rm -it \
+  -v "$(pwd)/certbot/www:/var/www/certbot" \
+  -v "$(pwd)/certbot/conf:/etc/letsencrypt" \
+  certbot/certbot certonly \
+  --webroot \
+  -w /var/www/certbot \
+  -d situation-room.org \
+  --agree-tos \
+  --email your-email@example.com \
+  --non-interactive
+```
+
+> ⚠️ **Note:** This only works if your domain `situation-room.org` publicly resolves to the server’s IP and ports 80/443 are open.  
+> For **local testing**, use the **self-signed certificate** method above instead.
+
+---
+
+### ✅ TL;DR
+
+| Case                                            | Certificate Type  | Works For     | Verified By   |
+|-------------------------------------------------|-------------------|---------------|---------------|
+| Local setup (`hermes-situation-room.release`)   | Self-signed       | Development   | Manual trust  |
+| Production (`situation-room.org`)               | Let’s Encrypt     | Public server | Trusted CA    |
 
 ---
 
