@@ -1,0 +1,45 @@
+Business Source License 1.1
+
+License text copyright (c) 2017 MariaDB Corporation Ab, All Rights Reserved.
+"Business Source License" is a trademark of MariaDB Corporation Ab.
+
+------------------------------------------------------------------------------
+
+Parameters
+
+Licensor:             HERMES
+Licensed Work:        Situation Room Delivery
+                      The Licensed Work is (c) 2025 HERMES.
+Change Date:          None
+Change License:       None (Remains under Business Source License 1.1)
+
+------------------------------------------------------------------------------
+
+Terms
+
+The Licensor hereby grants you the right to copy, modify, create derivative
+works, redistribute, and make non-production use of the Licensed Work.
+The rights granted are subject to the following conditions:
+
+1. You may not use the Licensed Work for a production environment or
+   for providing a hosted or managed service similar to the Licensed Work,
+   without a separate, commercial license from the Licensor.
+
+2. You must preserve all legal notices and license text included by the
+   Licensor in all copies or substantial portions of the Licensed Work.
+
+3. You must not remove or alter any notices of copyright, trademark, or
+   other proprietary rights.
+
+4. Any use of the Licensed Work in violation of these terms automatically
+   terminates your rights under this License.
+
+Change License
+
+On the Change Date specified above, the Licensor will change the license
+of the Licensed Work to the Change License described above.
+
+------------------------------------------------------------------------------
+
+For more information about the Business Source License, see:
+https://mariadb.com/bsl11/
