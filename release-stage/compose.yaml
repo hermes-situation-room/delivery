@@ -33,7 +33,7 @@ services:
   # 🖥️ FRONTEND (INTERNAL ONLY)
   # -------------------------------
   frontend-release:
-    image: dariokrieg/situationroom-frontend:2025-10-15.100
+    image: dariokrieg/situationroom-frontend:2025-10-16.120
     container_name: hermes-frontend-release
     pull_policy: always
     restart: unless-stopped
@@ -53,7 +53,7 @@ services:
   # ⚙️ BACKEND API (INTERNAL ONLY)
   # -------------------------------
   api-release:
-    image: dariokrieg/situationroom-backend:2025-10-15.130
+    image: dariokrieg/situationroom-backend:2025-10-15.135
     container_name: hermes-backend-release
     pull_policy: always
     restart: unless-stopped
