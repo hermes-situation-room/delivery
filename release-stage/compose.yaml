@@ -8,7 +8,6 @@
 # ======================================================
 
 services:
-
   # -------------------------------
   # 🌐 NGINX REVERSE PROXY (PUBLIC ENTRY POINT)
   # -------------------------------
@@ -20,9 +19,9 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d:ro         # Nginx configs (TLS, proxy, rate limits, etc.)
-      - ./certbot/www:/var/www/certbot:rw           # Certbot challenge directory
-      - ./certbot/conf:/etc/letsencrypt:ro          # SSL certificates
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro # Nginx configs (TLS, proxy, rate limits, etc.)
+      - ./certbot/www:/var/www/certbot:rw # Certbot challenge directory
+      - ./certbot/conf:/etc/letsencrypt:ro # SSL certificates
     networks:
       - hermes-release-network
     depends_on:
@@ -33,27 +32,27 @@ services:
   # 🖥️ FRONTEND (INTERNAL ONLY)
   # -------------------------------
   frontend-release:
-    image: dariokrieg/situationroom-frontend:2025-10-16.120
+    image: dariokrieg/situationroom-frontend:2025-10-17.141
     container_name: hermes-frontend-release
     pull_policy: always
     restart: unless-stopped
     environment:
       - NODE_ENV=production
     expose:
-      - "80"                                        # Internal only — accessed by nginx
+      - "80" # Internal only — accessed by nginx
     networks:
       - hermes-release-network
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
 
   # -------------------------------
   # ⚙️ BACKEND API (INTERNAL ONLY)
   # -------------------------------
   api-release:
-    image: dariokrieg/situationroom-backend:2025-10-15.135
+    image: dariokrieg/situationroom-backend:2025-10-17.156
     container_name: hermes-backend-release
     pull_policy: always
     restart: unless-stopped
@@ -61,7 +60,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - ConnectionStrings__SituationRoomDb=${DB_CONN_STRING}
     expose:
-      - "8080"                                       # Internal only — proxied by nginx
+      - "8080" # Internal only — proxied by nginx
     networks:
       - hermes-release-network
     depends_on:
@@ -69,7 +68,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
+          cpus: "1.0"
           memory: 1G
 
   # -------------------------------
@@ -84,7 +83,7 @@ services:
       - MSSQL_PID=Developer
       - SA_PASSWORD=${MSSQL_SA_PASSWORD}
     expose:
-      - "1433"                                       # Internal only — never mapped to host
+      - "1433" # Internal only — never mapped to host
     volumes:
       - sql-server-data-release:/var/opt/mssql:rw
     networks:
@@ -115,11 +114,11 @@ services:
 # -------------------------------
 networks:
   hermes-release-network:
-    driver: bridge                                  # Internal-only network (isolated from host)
+    driver: bridge # Internal-only network (isolated from host)
 
 # -------------------------------
 # 💾 PERSISTENT VOLUMES
 # -------------------------------
 volumes:
   sql-server-data-release:
-    driver: local                                   # Persistent DB data (mounted securely)
+    driver: local # Persistent DB data (mounted securely)
