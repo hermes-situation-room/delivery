@@ -52,7 +52,7 @@ services:
     # ⚙️ BACKEND API (INTERNAL ONLY)
     # -------------------------------
     api-release:
-        image: dariokrieg/situationroom-backend:2025-10-17.161
+        image: dariokrieg/situationroom-backend:2025-10-17.163
         container_name: hermes-backend-release
         pull_policy: always
         restart: unless-stopped
